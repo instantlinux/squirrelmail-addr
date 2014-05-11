@@ -3,13 +3,13 @@
  * options_main.mod
  * ----------------
  * Squirrelspell module
- * Copyright (c) 1999-2010 The SquirrelMail Project Team
+ * Copyright (c) 1999-2011 The SquirrelMail Project Team
  * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
  * Default page called when accessing SquirrelSpell's options.
  *
  * @author Konstantin Riabitsev <icon@duke.edu>
- * @version $Id: options_main.mod 13893 2010-01-25 02:47:41Z pdontthink $
+ * @version $Id: options_main.mod 14084 2011-01-06 02:44:03Z pdontthink $
  * @package plugins
  * @subpackage squirrelspell
  */

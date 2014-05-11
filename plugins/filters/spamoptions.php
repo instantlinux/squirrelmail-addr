@@ -18,8 +18,8 @@
  *
  * Also view plugins/README.plugins for more information.
  *
- * @version $Id: spamoptions.php 13893 2010-01-25 02:47:41Z pdontthink $
- * @copyright (c) 1999-2010 The SquirrelMail Project Team
+ * @version $Id: spamoptions.php 14084 2011-01-06 02:44:03Z pdontthink $
+ * @copyright (c) 1999-2011 The SquirrelMail Project Team
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package plugins
  * @subpackage filters

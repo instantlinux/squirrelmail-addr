@@ -5,9 +5,9 @@
  *
  * Derived from webmail.php by Ralf Kraudelt <kraude@wiwi.uni-rostock.de>
  *
- * @copyright 1999-2010 The SquirrelMail Project Team
+ * @copyright 1999-2011 The SquirrelMail Project Team
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version $Id: redirect.php 13946 2010-06-21 00:43:54Z pdontthink $
+ * @version $Id: redirect.php 14084 2011-01-06 02:44:03Z pdontthink $
  * @package squirrelmail
  */
 
@@ -114,7 +114,10 @@ if (!sqsession_is_registered('user_is_logged_in')) {
     $username = $login_username;
     sqsession_register ($username, 'username');
     sqsetcookie('key', $key, 0, $base_uri);
+
+    $is_login_verified_hook = TRUE;
     do_hook ('login_verified');
+    $is_login_verified_hook = FALSE;
 
 }
 

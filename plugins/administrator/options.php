@@ -5,9 +5,9 @@
  * This script creates separate page, that allows to review and modify
  * SquirrelMail configuration file.
  *
- * @version $Id: options.php 13893 2010-01-25 02:47:41Z pdontthink $
+ * @version $Id: options.php 14084 2011-01-06 02:44:03Z pdontthink $
  * @author Philippe Mingo
- * @copyright (c) 1999-2010 The SquirrelMail Project Team
+ * @copyright (c) 1999-2011 The SquirrelMail Project Team
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @package plugins
  * @subpackage administrator

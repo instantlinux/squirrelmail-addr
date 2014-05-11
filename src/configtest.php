@@ -3,9 +3,9 @@
 /**
  * SquirrelMail configtest script
  *
- * @copyright 2003-2010 The SquirrelMail Project Team
+ * @copyright 2003-2011 The SquirrelMail Project Team
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version $Id: configtest.php 13933 2010-04-16 05:24:43Z pdontthink $
+ * @version $Id: configtest.php 14084 2011-01-06 02:44:03Z pdontthink $
  * @package squirrelmail
  * @subpackage config
  */

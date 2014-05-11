@@ -4,7 +4,7 @@
  * --------------
  * Squirrelspell module
  *
- * Copyright (c) 1999-2010 The SquirrelMail Project Team
+ * Copyright (c) 1999-2011 The SquirrelMail Project Team
  * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
  * This module deletes the words from the user dictionary. Called
@@ -13,7 +13,7 @@
  *
  *
  * @author Konstantin Riabitsev <icon@duke.edu>
- * @version $Id: forget_me.mod 13893 2010-01-25 02:47:41Z pdontthink $
+ * @version $Id: forget_me.mod 14084 2011-01-06 02:44:03Z pdontthink $
  * @package plugins
  * @subpackage squirrelspell
  */

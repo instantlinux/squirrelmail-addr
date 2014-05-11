@@ -11,9 +11,9 @@
  *    - Send mail
  *    - Save As Draft
  *
- * @copyright 1999-2010 The SquirrelMail Project Team
+ * @copyright 1999-2011 The SquirrelMail Project Team
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version $Id: compose.php 13968 2010-07-21 19:19:47Z pdontthink $
+ * @version $Id: compose.php 14084 2011-01-06 02:44:03Z pdontthink $
  * @package squirrelmail
  */
 

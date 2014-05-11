@@ -7,10 +7,10 @@
  *   deletes or moves currently displayed message and displays
  *   next or previous message.
  *
- * Copyright (c) 1999-2010 The SquirrelMail Project Team
+ * Copyright (c) 1999-2011 The SquirrelMail Project Team
  * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
- * $Id: setup.php 13917 2010-02-20 19:31:44Z pdontthink $
+ * $Id: setup.php 14084 2011-01-06 02:44:03Z pdontthink $
  * @package plugins
  * @subpackage delete_move_next
  */

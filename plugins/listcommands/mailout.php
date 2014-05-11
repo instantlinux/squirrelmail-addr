@@ -2,10 +2,10 @@
 /**
  * mailout.php
  *
- * Copyright (c) 1999-2010 The SquirrelMail Project Team
+ * Copyright (c) 1999-2011 The SquirrelMail Project Team
  * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
- * $Id: mailout.php 13893 2010-01-25 02:47:41Z pdontthink $
+ * $Id: mailout.php 14088 2011-02-01 13:06:03Z avel $
  * @package plugins
  * @subpackage listcommands
  */
@@ -54,7 +54,8 @@ html_tag( 'table', '', 'center', $color[0], 'border="0" width="75%"' ) . "\n" .
 
 printf( $out_string, htmlspecialchars($send_to) );
 
-echo '<form method="post" action="../../src/compose.php">';
+echo '<form method="post" action="../../src/compose.php">'.
+     '<input type="hidden" name="smtoken" value="' . sm_generate_security_token() . '" />';
 
 $idents = get_identities();
 

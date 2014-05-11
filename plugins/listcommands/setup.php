@@ -3,7 +3,7 @@
 /**
  * setup.php
  *
- * Copyright (c) 1999-2010 The SquirrelMail Project Team
+ * Copyright (c) 1999-2011 The SquirrelMail Project Team
  * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
  * Implementation of RFC 2369 for SquirrelMail.
@@ -11,7 +11,7 @@
  * this plugin displays a menu which gives the user a choice of mailinglist
  * commands such as (un)subscribe, help and list archives.
  *
- * $Id: setup.php 13893 2010-01-25 02:47:41Z pdontthink $
+ * $Id: setup.php 14084 2011-01-06 02:44:03Z pdontthink $
  * @package plugins
  * @subpackage listcommands
  */

@@ -4,14 +4,14 @@
  * ---------------
  * Squirrelspell module
  *
- * Copyright (c) 1999-2010 The SquirrelMail Project Team
+ * Copyright (c) 1999-2011 The SquirrelMail Project Team
  * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
  * This module handles the encryption/decryption of the user dictionary
  * if the user so chooses from the options page.
  *
  * @author Konstantin Riabitsev <icon@duke.edu>
- * @version $Id: crypto.mod 13893 2010-01-25 02:47:41Z pdontthink $
+ * @version $Id: crypto.mod 14084 2011-01-06 02:44:03Z pdontthink $
  * @package plugins
  * @subpackage squirrelspell
  */

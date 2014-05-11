@@ -6,9 +6,9 @@
  * This is where the mailboxes are listed. This controls most of what
  * goes on in SquirrelMail.
  *
- * @copyright 1999-2010 The SquirrelMail Project Team
+ * @copyright 1999-2011 The SquirrelMail Project Team
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version $Id: right_main.php 13946 2010-06-21 00:43:54Z pdontthink $
+ * @version $Id: right_main.php 14084 2011-01-06 02:44:03Z pdontthink $
  * @package squirrelmail
  */
 

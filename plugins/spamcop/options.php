@@ -3,10 +3,10 @@
    /**
     **  options.php -- SpamCop options page
     **
-    **  Copyright (c) 1999-2010 The SquirrelMail Project Team
+    **  Copyright (c) 1999-2011 The SquirrelMail Project Team
     **  Licensed under the GNU GPL. For full terms see the file COPYING.
     **
-    **  $Id: options.php 13943 2010-06-20 17:14:41Z jangliss $
+    **  $Id: options.php 14084 2011-01-06 02:44:03Z pdontthink $
     **/
 
 define('SM_PATH','../../');

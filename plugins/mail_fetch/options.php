@@ -5,9 +5,9 @@
  *
  * Setup of the mailfetch plugin.
  *
- * @copyright 1999-2010 The SquirrelMail Project Team
+ * @copyright 1999-2011 The SquirrelMail Project Team
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version $Id: options.php 13951 2010-06-21 07:19:31Z pdontthink $
+ * @version $Id: options.php 14084 2011-01-06 02:44:03Z pdontthink $
  * @package plugins
  * @subpackage mail_fetch
  */

@@ -3,7 +3,7 @@
 /**
  * newmail.php
  *
- * Copyright (c) 1999-2010 The SquirrelMail Project Team
+ * Copyright (c) 1999-2011 The SquirrelMail Project Team
  * Copyright (c) 2000 by Michael Huttinger
  * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
@@ -22,7 +22,7 @@
  * This was tested with IE5.0 - but I hear Netscape works well,
  * too (with a plugin).
  *
- * @version $Id: setup.php 13893 2010-01-25 02:47:41Z pdontthink $
+ * @version $Id: setup.php 14116 2011-07-12 03:19:15Z pdontthink $
  * @package plugins
  * @subpackage new_mail
  */
@@ -220,16 +220,17 @@ function newmail_plugin() {
         // will play the sound as follows:
 
         if ($newmail_changetitle) {
+            global $org_title;
             echo "<script language=\"javascript\" type=\"text/javascript\">\n" .
                 "function ChangeTitleLoad() {\n";
             if( $totalNew > 1 || $totalNew == 0 ) {
-                echo 'window.parent.document.title = "' .
+                echo 'window.parent.document.title = "' . $org_title . ' [' .
                     sprintf(_("%s New Messages"), $totalNew ) . 
-                    "\";\n";
+                    "]\";\n";
             } else {
-                echo 'window.parent.document.title = "' .
+                echo 'window.parent.document.title = "' . $org_title . ' [' .
                     sprintf(_("%s New Message"), $totalNew ) . 
-                    "\";\n";
+                    "]\";\n";
             }
             echo    "if (BeforeChangeTitle != null)\n".
                 "BeforeChangeTitle();\n".

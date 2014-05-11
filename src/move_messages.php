@@ -5,9 +5,9 @@
  *
  * Enables message moving between folders on the IMAP server.
  *
- * @copyright 1999-2010 The SquirrelMail Project Team
+ * @copyright 1999-2011 The SquirrelMail Project Team
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version $Id: move_messages.php 13954 2010-06-21 08:08:16Z pdontthink $
+ * @version $Id: move_messages.php 14084 2011-01-06 02:44:03Z pdontthink $
  * @package squirrelmail
  */
 

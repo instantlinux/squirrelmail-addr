@@ -1,13 +1,13 @@
 /**
  * init.js
  *
- * Copyright (c) 1999-2010 The SquirrelMail Project Team
+ * Copyright (c) 1999-2011 The SquirrelMail Project Team
  * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
  * Grabs the text from the SquirrelMail field and submits it to
  * the squirrelspell.
  *
- * $Id: init.js 13893 2010-01-25 02:47:41Z pdontthink $
+ * $Id: init.js 14084 2011-01-06 02:44:03Z pdontthink $
  */
 
 /**

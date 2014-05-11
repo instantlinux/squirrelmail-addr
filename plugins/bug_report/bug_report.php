@@ -8,12 +8,12 @@
  * a button to show the bug report mail message in order to actually
  * send it.
  *
- * Copyright (c) 1999-2010 The SquirrelMail Project Team
+ * Copyright (c) 1999-2011 The SquirrelMail Project Team
  * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
  * This is a standard Squirrelmail-1.2 API for plugins.
  *
- * @version $Id: bug_report.php 13893 2010-01-25 02:47:41Z pdontthink $
+ * @version $Id: bug_report.php 14084 2011-01-06 02:44:03Z pdontthink $
  * @package plugins
  * @subpackage bug_report
  */

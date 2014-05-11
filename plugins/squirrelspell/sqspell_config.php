@@ -2,10 +2,10 @@
 /**
  * sqspell_config.php -- SquirrelSpell Configuration file.
  *
- * Copyright (c) 1999-2010 The SquirrelMail Project Team
+ * Copyright (c) 1999-2011 The SquirrelMail Project Team
  * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
- * @version $Id: sqspell_config.php 13893 2010-01-25 02:47:41Z pdontthink $
+ * @version $Id: sqspell_config.php 14084 2011-01-06 02:44:03Z pdontthink $
  * @package plugins
  * @subpackage squirrelspell
  */

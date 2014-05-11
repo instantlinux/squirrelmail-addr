@@ -5,9 +5,9 @@
  *
  * Displays all options relating to personal information
  *
- * @copyright 1999-2010 The SquirrelMail Project Team
+ * @copyright 1999-2011 The SquirrelMail Project Team
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version $Id: personal.php 13893 2010-01-25 02:47:41Z pdontthink $
+ * @version $Id: personal.php 14084 2011-01-06 02:44:03Z pdontthink $
  * @package squirrelmail
  */
 
@@ -130,7 +130,7 @@ function load_optpage_data_personal() {
         );
     }
 
-    if ( $tzChangeAllowed ) {
+    if ( $tzChangeAllowed || function_exists('date_default_timezone_set')) {
         $TZ_ARRAY[SMPREF_NONE] = _("Same as server");
         $tzfile = SM_PATH . 'locale/timezones.cfg';
         if ((!is_readable($tzfile)) or (!$fd = fopen($tzfile,'r'))) {

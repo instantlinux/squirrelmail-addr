@@ -6,9 +6,9 @@
  * Loads preferences from the $username.pref file used by almost
  * every other script in the source directory and alswhere.
  *
- * @copyright 1999-2010 The SquirrelMail Project Team
+ * @copyright 1999-2011 The SquirrelMail Project Team
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version $Id: load_prefs.php 13914 2010-02-16 20:14:18Z pdontthink $
+ * @version $Id: load_prefs.php 14084 2011-01-06 02:44:03Z pdontthink $
  * @package squirrelmail
  */
 

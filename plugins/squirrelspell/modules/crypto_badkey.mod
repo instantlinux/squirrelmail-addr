@@ -4,14 +4,14 @@
  * ------------------
  * Squirrelspell module
  *
- * Copyright (c) 1999-2010 The SquirrelMail Project Team
+ * Copyright (c) 1999-2011 The SquirrelMail Project Team
  * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
  * This module tries to decrypt the user dictionary with a newly provided
  * old password, or erases the file if everything else fails. :(
  *
  * @author Konstantin Riabitsev <icon@duke.edu>
- * @version $Id: crypto_badkey.mod 13893 2010-01-25 02:47:41Z pdontthink $
+ * @version $Id: crypto_badkey.mod 14084 2011-01-06 02:44:03Z pdontthink $
  * @package plugins
  * @subpackage squirrelspell
  */

@@ -3,12 +3,12 @@
 /**
  * newmail.php
  *
- * Copyright (c) 1999-2010 The SquirrelMail Project Team
+ * Copyright (c) 1999-2011 The SquirrelMail Project Team
  * Licensed under the GNU GPL. For full terms see the file COPYING.        
  *
  * Displays all options relating to new mail sounds
  *
- * $Id: newmail.php 13893 2010-01-25 02:47:41Z pdontthink $
+ * $Id: newmail.php 14084 2011-01-06 02:44:03Z pdontthink $
  * @package plugins
  * @subpackage newmail
  */
