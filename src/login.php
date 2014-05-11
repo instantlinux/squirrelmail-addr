@@ -8,7 +8,7 @@
  *
  * @copyright 1999-2010 The SquirrelMail Project Team
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version $Id: login.php 13946 2010-06-21 00:43:54Z pdontthink $
+ * @version $Id: login.php,v 1.1.21.2 2010/11/08 15:49:55 root Exp $
  * @package squirrelmail
  */
 
@@ -199,7 +199,7 @@ echo html_tag( 'table',
               : '' ).
             ( (isset($hide_sm_attributions) && $hide_sm_attributions) ? '' :
             '<small>' . sprintf (_("SquirrelMail version %s"), $version) . '<br />' ."\n".
-            '  ' . _("By the SquirrelMail Project Team") . '<br /></small>' . "\n" ) .
+            '  ' . _("<i>Installed November 2010 - Authorized Users Only</i>") . '<br /></small>' . "\n" ) .
             html_tag( 'table',
                 html_tag( 'tr',
                     html_tag( 'td',

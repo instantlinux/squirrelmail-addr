@@ -7,7 +7,7 @@
  *
  * @copyright 1999-2010 The SquirrelMail Project Team
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version $Id: page_header.php 13904 2010-02-13 16:28:10Z kink $
+ * @version $Id: page_header.php,v 1.1.21.1 2010/11/08 21:42:33 richb Exp $
  * @package squirrelmail
  */
 

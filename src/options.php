@@ -8,7 +8,7 @@
  *
  * @copyright 1999-2010 The SquirrelMail Project Team
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version $Id: options.php 13893 2010-01-25 02:47:41Z pdontthink $
+ * @version $Id: options.php,v 1.1.21.2 2010/11/08 15:58:01 root Exp $
  * @package squirrelmail
  * @subpackage prefs
  */
@@ -46,6 +46,8 @@ define('SMOPT_PAGE_DISPLAY', 'display');
 define('SMOPT_PAGE_HIGHLIGHT', 'highlight');
 define('SMOPT_PAGE_FOLDER', 'folder');
 define('SMOPT_PAGE_ORDER', 'order');
+define('SMOPT_PAGE_ADDRBOOK', 'addrbook');
+
 
 /**
   * Save submitted options and calculate the most 
@@ -202,6 +204,12 @@ switch ($optpage) {
         $optpage_file = SM_PATH . 'include/options/order.php';
         $optpage_loader = 'load_optpage_data_order';
         $optpage_loadhook = 'optpage_loadhook_order';
+        break;
+    case SMOPT_PAGE_ADDRBOOK:
+        $optpage_name = _("Address Book Preferences");
+        $optpage_file = SM_PATH . 'include/options/addrbook.php';
+        $optpage_loader = 'load_optpage_data_addrbook';
+        $optpage_loadhook = 'optpage_loadhook_addrbook';
         break;
     default: do_hook('optpage_set_loadinfo');
 }
@@ -385,6 +393,13 @@ if ($optpage == SMOPT_PAGE_MAIN) {
         'desc' => _("The order of the message index can be rearranged and changed to contain the headers in any order you want."),
         'js'   => false
     );
+    /* Build a section for Address Book Options. */
+    $optpage_blocks[] = array(
+        'name' => _("Address Book Preferences"),
+        'url'  => 'options.php?optpage=' . SMOPT_PAGE_ADDRBOOK,
+        'desc' => _("Control how your address book appears."),
+        'js'   => false
+    );
 
     /* Build a section for plugins wanting to register an optionpage. */
     do_hook('optpage_register_block');
@@ -471,6 +486,11 @@ if ($optpage == SMOPT_PAGE_MAIN) {
             $inside_hook_name = 'options_order_inside';
             $bottom_hook_name = 'options_order_bottom';
             $submit_name = 'submit_order';
+            break;
+        case SMOPT_PAGE_ADDRBOOK:
+            $inside_hook_name = 'options_addrbook_inside';
+            $bottom_hook_name = 'options_addrbook_bottom';
+            $submit_name = 'submit_addrbook';
             break;
         default:
             $inside_hook_name = '';

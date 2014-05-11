@@ -11,7 +11,7 @@
  *
  * @copyright 1999-2010 The SquirrelMail Project Team
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version $Id: addrbook_search.php 13893 2010-01-25 02:47:41Z pdontthink $
+ * @version $Id: addrbook_search.php,v 1.1.21.2 2010/11/09 16:47:21 richb Exp $
  * @package squirrelmail
  * @subpackage addressbook
  */
@@ -130,7 +130,7 @@ function display_result($res, $includesource = true) {
     html_tag( 'th', '&nbsp;', 'left' ) .
     html_tag( 'th', '&nbsp;' . _("Name"), 'left' ) .
     html_tag( 'th', '&nbsp;' . _("E-mail"), 'left' ) .
-    html_tag( 'th', '&nbsp;' . _("Info"), 'left' );
+    html_tag( 'th', '&nbsp;' . _("Phone"), 'left' );
 
     if ($includesource) {
         echo html_tag( 'th', '&nbsp;' . _("Source"), 'left', '', 'width="10%"' );
@@ -158,7 +158,7 @@ function display_result($res, $includesource = true) {
              '<a href="javascript:to_and_close(' .
                  "'" . $email . "');\">" . htmlspecialchars($row['email']) . '</a>'
         , 'left', '', 'valign="top"' ) .
-        html_tag( 'td', htmlspecialchars($row['label']), 'left', '', 'valign="top" nowrap' );
+        html_tag( 'td', htmlspecialchars($row['phonedisplay']), 'left', '', 'valign="top" nowrap' );
         if ($includesource) {
             echo html_tag( 'td', '&nbsp;' . $row['source'], 'left', '', 'valign="top" nowrap' );
         }
@@ -252,7 +252,7 @@ if ($show == 'form' && empty($listall)) {
             $res = $abook->list_addr($backend);
 
             if(is_array($res)) {
-                usort($res,'alistcmp');
+//              usort($res,'alistcmp');
                 display_result($res, false);
             } else {
                 echo html_tag( 'p', '<strong>' .
@@ -262,7 +262,7 @@ if ($show == 'form' && empty($listall)) {
             }
         } else {
             $res = $abook->list_addr();
-            usort($res,'alistcmp');
+//          usort($res,'alistcmp');
             display_result($res, true);
         }
 
@@ -297,7 +297,7 @@ if ($show == 'form' && empty($listall)) {
                 exit;
             }
         
-            display_result($res);
+            display_result($res, false);
         }
     }
    

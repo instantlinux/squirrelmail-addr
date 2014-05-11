@@ -1,31 +1,12 @@
 <?php
-
+   
 /**
  * abook_database.php
  *
- * @copyright 1999-2010 The SquirrelMail Project Team
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version $Id: abook_database.php 13893 2010-01-25 02:47:41Z pdontthink $
- * @package squirrelmail
- * @subpackage addressbook
- */
-
-/** Needs the DB functions */
-if (!include_once('DB.php')) {
-    // same error also in db_prefs.php
-    require_once(SM_PATH . 'functions/display_messages.php');
-    $error  = _("Could not include PEAR database functions required for the database backend.") . "<br />\n";
-    $error .= sprintf(_("Is PEAR installed, and is the include path set correctly to find %s?"),
-                        '<tt>DB.php</tt>') . "<br />\n";
-    $error .= _("Please contact your system administrator and report this error.");
-    error_box($error, $color);
-    exit;
-}
-
-/**
- * Address book in a database backend
+ * Copyright (c) 1999-2003 The SquirrelMail Project Team
+ * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
- * Backend for personal/shared address book stored in a database,
+ * Backend for personal addressbook stored in a database,
  * accessed using the DB-classes in PEAR.
  *
  * IMPORTANT:  The PEAR modules must be in the include path
@@ -33,88 +14,221 @@ if (!include_once('DB.php')) {
  *
  * An array with the following elements must be passed to
  * the class constructor (elements marked ? are optional):
- * <pre>
- *   dsn       => database DNS (see PEAR for syntax)
- *   table     => table to store addresses in (must exist)
- *   owner     => current user (owner of address data)
- * ? name      => name of address book
- * ? writeable => set writeable flag (true/false)
- * ? listing   => enable/disable listing
- * </pre>
+ *
+ *    dsn       => database DNS (see PEAR for syntax)
+ *    table     => table to store addresses in (must exist)
+ *    owner     => current user (owner of address data)
+ *  ? writeable => set writeable flag (true/false)
+ *
  * The table used should have the following columns:
  * owner, nickname, firstname, lastname, email, label
  * The pair (owner,nickname) should be unique (primary key).
  *
  *  NOTE. This class should not be used directly. Use the
  *        "AddressBook" class instead.
- * @package squirrelmail
- * @subpackage addressbook
+ *
+ * $Id: abook_database.php,v 1.27 2011/10/21 18:12:50 richb Exp $
  */
-class abook_database extends addressbook_backend {
-    /**
-     * Backend type
-     * @var string
-     */
-    var $btype = 'local';
-    /**
-     * Backend name
-     * @var string
-     */
-    var $bname = 'database';
+   
+require_once('DB.php');
 
-    /**
-     * Data Source Name (connection description)
-     * @var string
-     */
+/*
+ * Create the tables in MySQL table thus:
+ *
+CREATE TABLE contacts_username (
+  uid varchar(10) NOT NULL default '',
+  created_by varchar(16) NOT NULL default 'richb',
+  Modified timestamp,
+  Created timestamp,
+  FirstName varchar(32) NOT NULL default '',
+  MiddleName varchar(32) NOT NULL default '',
+  LastName varchar(32) NOT NULL default '',
+  Title varchar(32) NOT NULL default '',
+  Suffix varchar(32) NOT NULL default '',
+  NickName varchar(32) NOT NULL default '',
+  Gender char(1) NOT NULL default '',
+  Company varchar(64) NOT NULL default '',
+  JobTitle varchar(32) NOT NULL default '',
+  Department varchar(64) NOT NULL default '',
+  BusinessStreet varchar(128) NOT NULL default '',
+  BusinessCity varchar(32) NOT NULL default '',
+  BusinessState varchar(16) NOT NULL default '',
+  BusinessPostalCode varchar(10) NOT NULL default '',
+  BusinessCountry varchar(32) NOT NULL default '',
+  WebPage varchar(64) NOT NULL default '',
+  HomeStreet varchar(128) NOT NULL default '',
+  HomeCity varchar(32) NOT NULL default '',
+  HomeState varchar(16) NOT NULL default '',
+  HomePostalCode varchar(10) NOT NULL default '',
+  HomeCountry varchar(32) NOT NULL default '',
+  OtherStreet varchar(128) NOT NULL default '',
+  OtherCity varchar(32) NOT NULL default '',
+  OtherState varchar(16) NOT NULL default '',
+  OtherPostalCode varchar(10) NOT NULL default '',
+  OtherCountry varchar(32) NOT NULL default '',
+  AddressSelector char(1) NOT NULL default 'H',
+  Phone1 varchar(20) NOT NULL default '',
+  Phone1Type int(1) NOT NULL default '0',
+  Phone2 varchar(20) NOT NULL default '',
+  Phone2Type int(1) NOT NULL default '1',
+  Phone3 varchar(20) NOT NULL default '',
+  Phone3Type int(1) NOT NULL default '2',
+  Phone4 varchar(20) NOT NULL default '',
+  Phone4Type int(1) NOT NULL default '7',
+  Phone5 varchar(20) NOT NULL default '',
+  Phone5Type int(1) NOT NULL default '3',
+  PhoneDisplay int(1) NOT NULL default '2',
+  AssistantsName varchar(64) NOT NULL default '',
+  AssistantsPhone varchar(20) NOT NULL default '',
+  ManagersName varchar(64) NOT NULL default '',
+  CompanyMainPhone varchar(20) NOT NULL default '',
+  OfficeLocation varchar(64) NOT NULL default '',
+  Account varchar(32) NOT NULL default '',
+  Email1 varchar(64) NOT NULL default '',
+  Email2 varchar(64) NOT NULL default '',
+  Email3 varchar(64) NOT NULL default '',
+  EmailSelector int(1) NOT NULL default '1',
+  Anniversary date,
+  Birthday date,
+  SigOther varchar(64) NOT NULL default '',
+  Children varchar(64) NOT NULL default '',
+  Hobby varchar(64) NOT NULL default '',
+  Categories set('Personal', 'Professional') NOT NULL default '',
+  User1 varchar(64) NOT NULL default '',
+  User2 varchar(64) NOT NULL default '',
+  User3 varchar(64) NOT NULL default '',
+  User4 varchar(64) NOT NULL default '',
+  Photo mediumblob NOT NULL,
+  Notes mediumtext,
+  PRIMARY KEY (uid)
+);
+
+CREATE TABLE history_username (
+  uid varchar(10) NOT NULL default '',
+  moddate timestamp(14) NOT NULL,
+  modby varchar(16) NOT NULL default '',
+  field varchar(20) NOT NULL default '',
+  newval varchar(255) NOT NULL default '',
+  oldval varchar(255) NOT NULL default ''
+);
+
+*/
+
+/* Phone label codes--0 thru 7 except 4 are defined by PalmOS */
+
+define('PHONE_LABEL_WORK',   0);
+define('PHONE_LABEL_HOME',   1);
+define('PHONE_LABEL_FAX',    2);
+define('PHONE_LABEL_OTHER',  3);
+define('PHONE_LABEL_MAIN',   5);
+define('PHONE_LABEL_PAGER',  6);
+define('PHONE_LABEL_MOBILE', 7);
+define('PHONE_LABEL_WORK2',  8);
+define('PHONE_LABEL_HOME2',  9);
+
+
+class abook_database extends addressbook_backend {
+    var $btype = 'local';
+    var $bname = 'database';
+      
     var $dsn       = '';
-    /**
-     * Table that stores addresses
-     * @var string
-     */
     var $table     = '';
-    /**
-     * Owner name
-     *
-     * Limits list of database entries visible to end user
-     * @var string
-     */
+    var $history   = '';
     var $owner     = '';
-    /**
-     * Database Handle
-     * @var resource
-     */
     var $dbh       = false;
-    /**
-     * Enable/disable writing into address book
-     * @var bool
-     */
+
     var $writeable = true;
-    /**
-     * Enable/disable address book listing
-     * @var bool
+      
+    var $phonelabelnames = array(
+		PHONE_LABEL_WORK   => 'W',
+		PHONE_LABEL_HOME   => 'H',
+		PHONE_LABEL_FAX    => 'F',
+		PHONE_LABEL_OTHER  => 'O',
+		PHONE_LABEL_MAIN   => 'M',
+		PHONE_LABEL_PAGER  => 'P',
+		PHONE_LABEL_MOBILE => 'C',
+		PHONE_LABEL_WORK2  => 'W2',
+		PHONE_LABEL_HOME2  => 'H2');
+
+    /*
+     * Field names:
+     * These fields are written to the MySQL contacts table.
+     * They are customized for this application by the author but more or less
+     * match the names used in such applications as Outlook and Palm Desktop.
+     * One additional field is written by this module, Created, which is a
+     * timestamp generated by the add() function.
      */
-    var $listing = true;
+
+    /*           Field         MySQL name */
+    var $fnames = array( 'uid'      => 'uid',
+		'firstname' => 'FirstName',
+		'lastname'  => 'LastName',
+		'company'   => 'Company',
+		'jobtitle'  => 'JobTitle',
+		'homestreet'=> 'HomeStreet',
+		'homecity'  => 'HomeCity',
+		'homestate' => 'HomeState',
+		'homezip'   => 'HomePostalCode',
+		'homecountry' => 'HomeCountry',
+		'businessstreet'=> 'BusinessStreet',
+		'businesscity'  => 'BusinessCity',
+		'businessstate' => 'BusinessState',
+		'businesszip'   => 'BusinessPostalCode',
+		'businesscountry' => 'BusinessCountry',
+		'otherstreet'=> 'OtherStreet',
+		'othercity'  => 'OtherCity',
+		'otherstate' => 'OtherState',
+		'otherzip'   => 'OtherPostalCode',
+		'othercountry' => 'OtherCountry',
+		'phone1'    => 'Phone1',
+		'phone2'    => 'Phone2',
+		'phone3'    => 'Phone3',
+		'phone4'    => 'Phone4',
+		'phone5'    => 'Phone5',
+		'phone1type'  => 'Phone1Type',
+		'phone2type'  => 'Phone2Type',
+		'phone3type'  => 'Phone3Type',
+		'phone4type'  => 'Phone4Type',
+		'phone5type'  => 'Phone5Type',
+		'phonesel'  => 'PhoneDisplay',
+		'addresssel' => 'AddressSelector',
+		'email1'    => 'Email1',
+		'email2'    => 'Email2',
+		'email3'    => 'Email3',
+		'emailsel'  => 'EmailSelector',
+		'sigother'  => 'SigOther',
+		'children'  => 'Children',
+		'anniversary' => 'Anniversary',
+		'birthday'  => 'Birthday',
+		'webpage'   => 'WebPage',
+		'user1'     => 'User1',
+		'user2'     => 'User2',
+		'user3'     => 'User3',
+		'user4'     => 'User4',
+		'categories' => 'Categories',
+		'notes'     => 'Notes');
 
     /* ========================== Private ======================= */
-
-    /**
-     * Constructor
-     * @param array $param address book backend options
-     */
+      
+    /* Constructor */
     function abook_database($param) {
         $this->sname = _("Personal address book");
-
+         
         if (is_array($param)) {
-            if (empty($param['dsn']) ||
-                empty($param['table']) ||
-                empty($param['owner'])) {
+            if (empty($param['dsn']) || 
+                empty($param['table']) || 
+                empty($param['owner']) ||
+		empty($param['history'])) {
                 return $this->set_error('Invalid parameters');
             }
-
+            
             $this->dsn   = $param['dsn'];
             $this->table = $param['table'];
             $this->owner = $param['owner'];
-
+            $this->history = $param['history'];
+	    if (!empty($param['sortby']))
+		$this->sortby = $param['sortby'];
+            
             if (!empty($param['name'])) {
                $this->sname = $param['name'];
             }
@@ -123,132 +237,69 @@ class abook_database extends addressbook_backend {
                $this->writeable = $param['writeable'];
             }
 
-            if (isset($param['listing'])) {
-               $this->listing = $param['listing'];
-            }
-
             $this->open(true);
         }
         else {
             return $this->set_error('Invalid argument to constructor');
         }
     }
-
-
-    /**
-     * Open the database.
-     * @param bool $new new connection if it is true
-     * @return bool
-     */
+      
+      
+    /* Open the database. New connection if $new is true */
     function open($new = false) {
         $this->error = '';
-
+         
         /* Return true is file is open and $new is unset */
         if ($this->dbh && !$new) {
             return true;
         }
-
+         
         /* Close old file, if any */
         if ($this->dbh) {
             $this->close();
         }
-
+         
         $dbh = DB::connect($this->dsn, true);
-
+         
         if (DB::isError($dbh)) {
             return $this->set_error(sprintf(_("Database error: %s"),
                                             DB::errorMessage($dbh)));
         }
-
+         
         $this->dbh = $dbh;
-
-        /**
-         * field names are lowercased.
-         * We use unquoted identifiers and they use upper case in Oracle
-         */
-        $this->dbh->setOption('portability', DB_PORTABILITY_LOWERCASE);
-
         return true;
     }
 
-    /**
-     * Close the file and forget the filehandle
-     */
+    /* Close the file and forget the filehandle */
     function close() {
         $this->dbh->disconnect();
         $this->dbh = false;
     }
 
-    /**
-     * Determine internal database field name given one of
-     * the SquirrelMail SM_ABOOK_FIELD_* constants
-     *
-     * @param integer $field The SM_ABOOK_FIELD_* contant to look up
-     *
-     * @return string The desired field name, or the string "ERROR"
-     *                if the $field is not understood (the caller
-     *                is responsible for handing errors)
-     *
-     */
-    function get_field_name($field) {
-        switch ($field) {
-            case SM_ABOOK_FIELD_NICKNAME:
-                return 'nickname';
-            case SM_ABOOK_FIELD_FIRSTNAME:
-                return 'firstname';
-            case SM_ABOOK_FIELD_LASTNAME:
-                return 'lastname';
-            case SM_ABOOK_FIELD_EMAIL:
-                return 'email';
-            case SM_ABOOK_FIELD_LABEL:
-                return 'label';
-            default:
-                return 'ERROR';
-        }
-    }
-
     /* ========================== Public ======================== */
-
-    /**
-     * Search the database
-     * @param string $expr search expression
-     * @return array search results
-     */
-    function search($expr) {
+     
+    /* Search the file */
+    function &search($expr) {
         $ret = array();
         if(!$this->open()) {
             return false;
         }
-
+         
         /* To be replaced by advanded search expression parsing */
         if (is_array($expr)) {
             return;
         }
 
-        // don't allow wide search when listing is disabled.
-        if ($expr=='*' && ! $this->listing) {
-            return array();
-        }
-
-        /* lowercase expression in order to make it case insensitive */
-        $expr = strtolower($expr);
-
-        /* escape SQL wildcards */
-        $expr = str_replace('_', '\\_', $expr);
-        $expr = str_replace('%', '\\%', $expr);
-
-        /* Convert wildcards to SQL syntax  */
+        /* Make regexp from glob'ed expression  */
         $expr = str_replace('?', '_', $expr);
         $expr = str_replace('*', '%', $expr);
         $expr = $this->dbh->quoteString($expr);
         $expr = "%$expr%";
 
-        /* create escape expression */
-        $escape = 'ESCAPE \'' . $this->dbh->quoteString('\\') . '\'';
-
-        $query = sprintf("SELECT * FROM %s WHERE owner='%s' AND " .
-                         "(LOWER(firstname) LIKE '%s' %s OR LOWER(lastname) LIKE '%s' %s)",
-                         $this->table, $this->owner, $expr, $escape, $expr, $escape);
+        $query = sprintf("SELECT * FROM %s WHERE created_by='%s' AND " .
+                         "(FirstName LIKE '%s' OR LastName LIKE '%s')" .
+			 " ORDER BY %s",
+                         $this->table, $this->owner, $expr, $expr, $this->sortby);
         $res = $this->dbh->query($query);
 
         if (DB::isError($res)) {
@@ -257,48 +308,42 @@ class abook_database extends addressbook_backend {
         }
 
         while ($row = $res->fetchRow(DB_FETCHMODE_ASSOC)) {
-            array_push($ret, array('nickname'  => $row['nickname'],
-                                   'name'      => "$row[firstname] $row[lastname]",
-                                   'firstname' => $row['firstname'],
-                                   'lastname'  => $row['lastname'],
-                                   'email'     => $row['email'],
-                                   'label'     => $row['label'],
+	    $phone = $row['Phone'.$row['PhoneDisplay']];
+	    $phonelabel = $row['Phone'.$row['PhoneDisplay'].'Type'];
+	    if ( !empty( $phone ) )
+	      $phone = $phone . "(".$this->phonelabelnames[$phonelabel].")";
+            if ( !empty( $row[EmailSelector] ) )
+	      $email = $row['Email'.$row[EmailSelector]];
+	    else
+	      $email = $row[Email1];
+
+            array_push($ret, array('uid'  => $row[uid],
+                                   'name'      => $row['FirstName']." ".$row['LastName'],
+                                   'firstname' => $row['FirstName'],
+                                   'lastname'  => $row['LastName'],
+                                   'email'     => $email,
+                                   'phonedisplay' => $phone,
                                    'backend'   => $this->bnum,
                                    'source'    => &$this->sname));
         }
         return $ret;
     }
+     
+    /* Lookup alias */
+    function &lookup($alias) {
 
-    /**
-     * Lookup by the indicated field
-     *
-     * @param string  $value Value to look up
-     * @param integer $field The field to look in, should be one
-     *                       of the SM_ABOOK_FIELD_* constants
-     *                       defined in functions/constants.php
-     *                       (OPTIONAL; defaults to nickname field)
-     *                       NOTE: uniqueness is only guaranteed
-     *                       when the nickname field is used here;
-     *                       otherwise, the first matching address
-     *                       is returned.
-     *
-     * @return array search results
-     *
-     */
-    function lookup($value, $field=SM_ABOOK_FIELD_NICKNAME) {
-        if (empty($value)) {
+        if (empty($alias)) {
             return array();
         }
-
-        $value = strtolower($value);
+         
+        $alias = strtolower($alias);
 
         if (!$this->open()) {
             return false;
         }
-
-        $query = sprintf("SELECT * FROM %s WHERE owner = '%s' AND LOWER(%s) = '%s'",
-                         $this->table, $this->owner, $this->get_field_name($field), 
-                         $this->dbh->quoteString($value));
+         
+        $query = sprintf("SELECT * FROM %s WHERE created_by='%s' AND uid='%s'",
+                         $this->table, $this->owner, $alias);
 
         $res = $this->dbh->query($query);
 
@@ -308,190 +353,511 @@ class abook_database extends addressbook_backend {
         }
 
         if ($row = $res->fetchRow(DB_FETCHMODE_ASSOC)) {
-            return array('nickname'  => $row['nickname'],
-                         'name'      => "$row[firstname] $row[lastname]",
-                         'firstname' => $row['firstname'],
-                         'lastname'  => $row['lastname'],
-                         'email'     => $row['email'],
-                         'label'     => $row['label'],
+
+	    /* Construct composite fields:  primary phone, primary email,
+	     * work/home/fax/cell phone numbers, work/business/other
+	     * addresses.
+	     */
+	    $phone = $row['Phone'.$row['PhoneDisplay']];
+	    $phonelabel = $row['Phone'.$row['PhoneDisplay'].'Type'];
+	    if ( !empty( $phone ) )
+	      $phone = $phone . "(" . $this->phonelabelnames[$phonelabel] . ")";
+	    $workphone = $homephone = $fax = $cellphone = "";
+	    for ($i = 1; $i <= 5; $i++) {
+		if (!empty($row['Phone'.$i])) {
+		    switch ($row['Phone'.$i.'Type']) {
+			case PHONE_LABEL_WORK:
+			    $workphone = $row['Phone'.$i]; break;
+			case PHONE_LABEL_HOME:
+			    $homephone = $row['Phone'.$i]; break;
+			case PHONE_LABEL_FAX:
+			    $fax       = $row['Phone'.$i]; break;
+			case PHONE_LABEL_MOBILE:
+			    $cellphone = $row['Phone'.$i]; break;
+		    }
+		}
+	    }
+	    if ( !empty( $row['EmailSelector'] ) )
+	      $email = $row['Email'.$row['EmailSelector']];
+	    else
+	      $email = $row['Email1'];
+	    $homeaddress = trim(
+		(!empty($row['HomeStreet']) ? "{$row['HomeStreet']}\n" : "") .
+	 	(!empty($row['HomeCity']) ? "{$row['HomeCity']}, " : "") .
+		$row['HomeState'] .
+		(!empty($row['HomePostalCode']) ? " {$row['HomePostalCode']}" : ""));
+	    $businessaddress = trim( $row['BusinessStreet'] .
+		(!empty($row['BusinessStreet']) ? "\n" : "") . $row['BusinessCity'] .
+		(!empty($row['BusinessCity']) ? ", " : "") . $row['BusinessState'] .
+		(!empty($row['BusinessPostalCode']) ? " {$row['BusinessPostalCode']}" : ""));
+	    $otheraddress = trim( $row['OtherStreet'] .
+		(!empty($row['OtherStreet']) ? "\n" : "") . $row['OtherCity'] .
+		(!empty($row['OtherCity']) ? ", " : "") . $row['OtherState'] .
+		(!empty($row['OtherPostalCode']) ? " {$row['OtherPostalCode']}" : ""));
+
+	    switch ( $row['AddressSelector'] ) {
+		case 'B':
+		    $mailingaddress = $businessaddress; break;
+		case 'O':
+		    $mailingaddress = $otheraddress;    break;
+		case 'H':
+		default:
+		    $mailingaddress = $homeaddress;     break;
+	    }
+	    $ret = array('name'      => "{$row['FirstName']} {$row['LastName']}",
+			 'phonedisplay' => $phone,
+			 'homephone' => $homephone,
+			 'workphone' => $workphone,
+			 'cellphone' => $cellphone,
+			 'fax'       => $fax,
+                         'email'     => $email,
+			 'homeaddress'    => $homeaddress,
+			 'businessaddress' => $businessaddress,
+			 'otheraddress'   => $otheraddress,
+			 'mailingaddress' => $mailingaddress,
+			 'modified'  => $row['Modified'],
+			 'created'   => $row['Created'],
                          'backend'   => $this->bnum,
                          'source'    => &$this->sname);
+
+	    /* Fill the return array with each of the SQL fields */
+	    foreach( $this->fnames as $field => $sqlname )
+		$ret[$field] = $row[$sqlname];
+	    return ($ret);
         }
         return array();
     }
 
-    /**
-     * List all addresses
-     * @return array search results
-     */
-    function list_addr() {
+    /* List all addresses */
+    function &list_addr() {
+	global $active_cat;
+
         $ret = array();
         if (!$this->open()) {
             return false;
         }
 
-        if(isset($this->listing) && !$this->listing) {
-            return array();
-        }
-
-
-        $query = sprintf("SELECT * FROM %s WHERE owner='%s'",
+        $query = sprintf("SELECT * FROM %s WHERE created_by='%s'",
                          $this->table, $this->owner);
 
-        $res = $this->dbh->query($query);
+	if (!empty( $active_cat ) > 0) {
+	  if ($active_cat != 'Unfiled')
+	      $query .= " AND Categories LIKE '%$active_cat%'";
+	  else
+	      $query .= " AND Categories = ''";
+	}
+	$query .= " ORDER BY $this->sortby";
 
+        $res = $this->dbh->query($query);
+        
         if (DB::isError($res)) {
             return $this->set_error(sprintf(_("Database error: %s"),
                                             DB::errorMessage($res)));
         }
 
         while ($row = $res->fetchRow(DB_FETCHMODE_ASSOC)) {
-            array_push($ret, array('nickname'  => $row['nickname'],
-                                   'name'      => "$row[firstname] $row[lastname]",
-                                   'firstname' => $row['firstname'],
-                                   'lastname'  => $row['lastname'],
-                                   'email'     => $row['email'],
-                                   'label'     => $row['label'],
+
+	    /* Construct composite fields:  primary phone, primary email.
+	     */
+	    $phone = $row['Phone'.$row['PhoneDisplay']];
+	    $phonelabel = $row['Phone'.$row['PhoneDisplay'].'Type'];
+	    if ( !empty( $phone ) )
+	      $phone = $phone . "(" . $this->phonelabelnames[$phonelabel] . ")";
+	    if ( !empty( $row['EmailSelector'] ) )
+	      $email = $row['Email'.$row['EmailSelector']];
+	    else
+	      $email = $row['Email1'];
+            array_push($ret, array('uid'  => $row['uid'],
+                                   'name'      => "{$row['FirstName']} {$row['LastName']}",
+                                   'firstname' => $row['FirstName'],
+                                   'lastname'  => $row['LastName'],
+                                   'company'   => $row['Company'],
+				   'jobtitle'  => $row['JobTitle'],
+                                   'email'     => $email,
+				   'phonedisplay' => $phone,
                                    'backend'   => $this->bnum,
                                    'source'    => &$this->sname));
         }
         return $ret;
     }
 
-    /**
-     * Add address
-     * @param array $userdata added data
-     * @return bool
-     */
+    /* Add address */
     function add($userdata) {
+
         if (!$this->writeable) {
-            return $this->set_error(_("Address book is read-only"));
+            return $this->set_error(_("Addressbook is read-only"));
         }
 
         if (!$this->open()) {
             return false;
         }
-
+         
         /* See if user exist already */
-        $ret = $this->lookup($userdata['nickname']);
+        $ret = $this->lookup($userdata[uid]);
         if (!empty($ret)) {
-            return $this->set_error(sprintf(_("User \"%s\" already exists"), $ret['nickname']));
+            return $this->set_error(sprintf(_("User '%s' already exist"),
+                                            $ret['uid']));
         }
 
         /* Create query */
-        $query = sprintf("INSERT INTO %s (owner, nickname, firstname, " .
-                         "lastname, email, label) VALUES('%s','%s','%s'," .
-                         "'%s','%s','%s')",
-                         $this->table, $this->owner,
-                         $this->dbh->quoteString($userdata['nickname']),
-                         $this->dbh->quoteString($userdata['firstname']),
-                         $this->dbh->quoteString((!empty($userdata['lastname'])?$userdata['lastname']:'')),
-                         $this->dbh->quoteString($userdata['email']),
-                         $this->dbh->quoteString((!empty($userdata['label'])?$userdata['label']:'')) );
+	$query = "INSERT INTO " . $this->table . "(created_by";
+	$query2 = ") VALUES('" . $this->owner . "'";
+	while (list($field, $sqlname) = each ($this->fnames)) {
+	  $query .= ", " . $sqlname;
+	  $query2 .= ",'" . $this->dbh->quoteString($userdata[$field]) . "'";
+	}
+	$query .= ",Created" . $query2 . ",NOW())";
 
          /* Do the insert */
          $r = $this->dbh->simpleQuery($query);
-
-         /* Check for errors */
-         if (DB::isError($r)) {
-             return $this->set_error(sprintf(_("Database error: %s"),
-                                             DB::errorMessage($r)));
+         if ($r == DB_OK) {
+             return true;
          }
 
-         return true;
+         /* Fail */
+         return $this->set_error(sprintf(_("Database error: %s"),
+                                         DB::errorMessage($r)));
     }
 
-    /**
-     * Delete address
-     * @param string $alias alias that has to be deleted
-     * @return bool
-     */
+    /* Delete address */
     function remove($alias) {
         if (!$this->writeable) {
-            return $this->set_error(_("Address book is read-only"));
+            return $this->set_error(_("Addressbook is read-only"));
         }
 
         if (!$this->open()) {
             return false;
         }
-
+         
         /* Create query */
-        $query = sprintf("DELETE FROM %s WHERE owner='%s' AND (",
+        $query = sprintf("DELETE FROM %s WHERE created_by='%s' AND (",
                          $this->table, $this->owner);
 
         $sepstr = '';
-        while (list($undef, $nickname) = each($alias)) {
-            $query .= sprintf("%s nickname='%s' ", $sepstr,
-                              $this->dbh->quoteString($nickname));
+        while (list($undef, $uid) = each($alias)) {
+            $query .= sprintf("%s uid='%s' ", $sepstr,
+                              $this->dbh->quoteString($uid));
             $sepstr = 'OR';
+
+	    /* Log UID as deleted */
+	    $r = $this->dbh->simpleQuery(
+	             "INSERT INTO " . $this->history .
+    		     " (uid,modby,field) VALUES ('$uid','$this->owner'," .
+		     "'DELETED')");
         }
         $query .= ')';
 
         /* Delete entry */
         $r = $this->dbh->simpleQuery($query);
-
-        /* Check for errors */
-        if (DB::isError($r)) {
-            return $this->set_error(sprintf(_("Database error: %s"),
-                                            DB::errorMessage($r)));
+        if ($r == DB_OK) {
+            return true;
         }
-        return true;
+
+        /* Fail */
+        return $this->set_error(sprintf(_("Database error: %s"),
+                                         DB::errorMessage($r)));
     }
 
-    /**
-     * Modify address
-     * @param string $alias modified alias
-     * @param array $userdata new data
-     * @return bool
-     */
+    /* Modify address */
     function modify($alias, $userdata) {
+
         if (!$this->writeable) {
-            return $this->set_error(_("Address book is read-only"));
+            return $this->set_error(_("Addressbook is read-only"));
         }
 
         if (!$this->open()) {
             return false;
         }
-
+         
          /* See if user exist */
         $ret = $this->lookup($alias);
         if (empty($ret)) {
-            return $this->set_error(sprintf(_("User \"%s\" does not exist"), $alias));
+            return $this->set_error(sprintf(_("User '%s' does not exist"),
+                                            $alias));
         }
 
-        /* make sure that new nickname is not used */
-        if (strtolower($alias) != strtolower($userdata['nickname'])) {
-            /* same check as in add() */
-            $ret = $this->lookup($userdata['nickname']);
-            if (!empty($ret)) {
-                $error = sprintf(_("User '%s' already exist."), $ret['nickname']);
-                return $this->set_error($error);
-            }
-        }
+	/* Log any changes */
+	foreach( $this->fnames as $field => $sqlname) {
+	    if ($ret[$field] != $userdata[$field] && $field != 'categories') {
+		$query = "INSERT INTO " . $this->history .
+		  " (uid,modby,field,newval,oldval) VALUES ('$userdata[uid]'," . 
+		  "'$this->owner'," .
+		  "'$field','" . $this->dbh->quoteString($userdata[$field]) .
+		  "','" . $this->dbh->quoteString($ret[$field]) . "')";
+		$r = $this->dbh->simpleQuery($query);
+	    }
+	}
 
         /* Create query */
-        $query = sprintf("UPDATE %s SET nickname='%s', firstname='%s', ".
-                         "lastname='%s', email='%s', label='%s' ".
-                         "WHERE owner='%s' AND nickname='%s'",
-                         $this->table,
-                         $this->dbh->quoteString($userdata['nickname']),
-                         $this->dbh->quoteString($userdata['firstname']),
-                         $this->dbh->quoteString((!empty($userdata['lastname'])?$userdata['lastname']:'')),
-                         $this->dbh->quoteString($userdata['email']),
-                         $this->dbh->quoteString((!empty($userdata['label'])?$userdata['label']:'')),
-                         $this->owner,
-                         $this->dbh->quoteString($alias) );
+	$query = "UPDATE " . $this->table . " SET ";
+
+	$comma = '';
+	foreach( $this->fnames as $field => $sqlname ) {
+	  $query .= $comma . $sqlname .
+		    "='" . $this->dbh->quoteString($userdata[$field]) . "'";
+	  $comma = ", ";
+	}		 
+	$query .= " WHERE created_by='" . $this->owner . "' AND uid='" .
+		 $this->dbh->quoteString($alias) . "'";
+
+//echo $query . '<BR>';
 
         /* Do the insert */
         $r = $this->dbh->simpleQuery($query);
-
-        /* Check for errors */
-        if (DB::isError($r)) {
-            return $this->set_error(sprintf(_("Database error: %s"),
-                                            DB::errorMessage($r)));
+        if ($r == DB_OK) {
+            return true;
         }
+
+        /* Fail */
+        return $this->set_error(sprintf(_("Database error: %s"),
+                                        DB::errorMessage($r)));
+    }
+
+    /* Query server for category names */
+    function category_get() {
+
+	$query = "DESCRIBE " . $this->table . " Categories";
+	
+        $res = $this->dbh->query($query);
+        if (DB::isError($res)) {
+            return $this->set_error(sprintf(_("Database error: %s"),
+                                            DB::errorMessage($res)));
+        }
+	$row = $res->fetchRow(DB_FETCHMODE_ASSOC);
+	$set = $row['Type'];
+	$set = substr($set,5,strlen($set)-7); // Strip "set(" ... ");"
+	return preg_split("/','/",$set); // Split into an array
+    }
+
+
+    /* Add a new category name */
+    function category_create($category) {
+
+	/* First get the existing categories */
+	$query = "DESCRIBE " . $this->table . " Categories";
+	
+        $res = $this->dbh->query($query);
+        if (DB::isError($res)) {
+            return $this->set_error(sprintf(_("Database error: %s"),
+                                            DB::errorMessage($res)));
+        }
+	$row = $res->fetchRow(DB_FETCHMODE_ASSOC);
+	$set = $row['Type'];
+
+	/* Now tack on the new category */
+	$query = "ALTER TABLE " . $this->table . " CHANGE Categories " .
+	    " Categories SET(" . substr($set,4,strlen($set)-5) . ",'" .
+	    $category . "') NOT NULL";
+	
+        $r = $this->dbh->simpleQuery($query);
+        if ($r == DB_OK) {
+            return true;
+        }
+
+        /* Fail */
+        return $this->set_error(sprintf(_("Database error: %s"),
+                                         DB::errorMessage($r)));
+    }
+
+    /* Delete category names */
+    function category_drop($catlist) {
+
+	/* First get the existing categories */
+	$query = "DESCRIBE " . $this->table . " Categories";
+	
+        $res = $this->dbh->query($query);
+        if (DB::isError($res)) {
+            return $this->set_error(sprintf(_("Database error: %s"),
+                                            DB::errorMessage($res)));
+        }
+	$row = $res->fetchRow(DB_FETCHMODE_ASSOC);
+	$set = $row['Type'];
+
+	$newcat = array_diff (explode("','", substr($set, 5, strlen($set)-7)),
+			      $catlist);
+	
+	/* Now tack on the new category */
+	$query = "ALTER TABLE " . $this->table . " CHANGE Categories " .
+	    " Categories SET('" . implode("','", $newcat) . "') NOT NULL";
+	
+        $r = $this->dbh->simpleQuery($query);
+        if ($r == DB_OK) {
+            return true;
+        }
+
+        /* Fail */
+        return $this->set_error(sprintf(_("Database error: %s"),
+                                         DB::errorMessage($r)));
+    }
+
+    /* Add records to a category */
+    function category_addrecs($category, $uids) {
+        if (!$this->writeable) {
+            return $this->set_error(_("Addressbook is read-only"));
+        }
+
+        if (!$this->open()) {
+            return false;
+        }
+         
+        /* Create query */
+        $query = sprintf("UPDATE %s SET Categories=CONCAT_WS(',',`Categories`,'%s') WHERE created_by='%s' AND (",
+                         $this->table, $category, $this->owner) .
+                 "uid = '" . implode("' OR uid='", $uids) . "')";
+
+        /* Invoke the entry */
+        $r = $this->dbh->simpleQuery($query);
+        if ($r == DB_OK) {
+            return true;
+        }
+
+        /* Fail */
+        return $this->set_error(sprintf(_("Database error: %s"),
+                                         DB::errorMessage($r)));
+    }
+
+    /* Add records from a category to another category */
+    function category_move($category, $oldcategory) {
+        if (!$this->writeable) {
+            return $this->set_error(_("Addressbook is read-only"));
+        }
+
+        if (!$this->open()) {
+            return false;
+        }
+         
+        /* Create query */
+        $query = sprintf("UPDATE %s SET Categories=CONCAT_WS(',',`Categories`,'%s') WHERE created_by='%s' AND Categories LIKE '%%%s%%'",
+                         $this->table, $category, $this->owner, $oldcategory);
+
+        /* Invoke the entry */
+        $r = $this->dbh->simpleQuery($query);
+        if ($r == DB_OK) {
+            return true;
+        }
+
+        /* Fail */
+        return $this->set_error(sprintf(_("Database error: %s"),
+                                         DB::errorMessage($r)));
+    }
+
+    /* Remove records from a category */
+    function category_rmrecs($category, $uids) {
+        if (!$this->writeable) {
+            return $this->set_error(_("Addressbook is read-only"));
+        }
+
+        if (!$this->open()) {
+            return false;
+        }
+         
+        /* Create query */
+        $query = sprintf("UPDATE %s SET Categories=Categories&~pow(2,find_in_set('%s',Categories)-1) WHERE created_by='%s' AND (",
+                         $this->table, $category, $this->owner) .
+                 "uid = '" . implode("' OR uid='", $uids) . "')";
+
+        /* Invoke the entry */
+        $r = $this->dbh->simpleQuery($query);
+        if ($r == DB_OK) {
+            return true;
+        }
+
+        /* Fail */
+        return $this->set_error(sprintf(_("Database error: %s"),
+                                         DB::errorMessage($r)));
+    }
+
+    /* Count records in a category */
+    function category_count($category) {
+
+        if (!$this->open()) {
+            return false;
+        }
+         
+        /* Create query */
+        $query = sprintf("SELECT COUNT(*) FROM %s WHERE Categories LIKE '%%%s%%' AND created_by='%s'",
+                         $this->table, $category, $this->owner);
+
+        /* Invoke the entry */
+        $res = $this->dbh->query($query);
+        if (DB::isError($res)) {
+            return $this->set_error(sprintf(_("Database error: %s"),
+                                            DB::errorMessage($res)));
+        }
+	$row = $res->fetchRow(DB_FETCHMODE_ASSOC);
+	return $row['COUNT(*)'];
+    }
+
+    /*
+     * set_sort
+     *   Parameter should look like 'field1 [ASC|DESC], field2 ...'.
+     */
+    function set_sort ($fields) {
+
+	$params = explode( ",", $fields);
+	$newsort = '';
+	$comma = '';
+	foreach ($params as $param) {
+	    $field = preg_split('/ /', trim($param));
+	    if (!isset ($this->fnames[strtolower($field[0])]))
+		return false;
+	    else {
+		$newsort .= $comma . $this->fnames[strtolower($field[0])];
+		if (isset($field[1]))
+		   $newsort .= " $field[1]";
+		$comma = ', ';
+	    }
+	}
+        $this->sortby = $newsort;
         return true;
+    }
+
+    /*
+     * get_history
+     */
+    function get_history ($uid) {
+        if (!$this->open()) {
+            return false;
+        }
+         
+        /* Create query */
+        $query = sprintf("SELECT * FROM %s WHERE uid='%s'",
+                         $this->history, $uid);
+
+        /* Invoke the entry */
+        $res = $this->dbh->query($query);
+        if (DB::isError($res)) {
+            return $this->set_error(sprintf(_("Database error: %s"),
+                                            DB::errorMessage($res)));
+        }
+	$ret = array();
+        while ($row = $res->fetchRow(DB_FETCHMODE_ASSOC)) {
+            array_push($ret, array('moddate' => $row['moddate'],
+				   'modby'   => $row['modby'],
+                                   'field'   => $row['field'],
+                                   'newval'  => $row['newval'],
+                                   'oldval'  => $row['oldval']));
+        }
+        return $ret;
+    }
+
+    /*
+     * raw_sql_cmd
+     */
+    function raw_sql_cmd ($query) {
+        if (!$this->open()) {
+            return false;
+        }
+         
+        /* Invoke the entry */
+        $res = $this->dbh->query(str_replace('INSERT INTO contacts ',
+		'INSERT INTO '.$this->table.' ', $query));
+        if (DB::isError($res)) {
+            return $this->set_error(sprintf(_("Database error: %s"),
+                                            DB::errorMessage($res)));
+        }
+	return true;
     }
 } /* End of class abook_database */
 
-// vim: et ts=4
+?>
