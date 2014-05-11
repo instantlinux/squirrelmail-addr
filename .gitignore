@@ -1,0 +1,5 @@
+RCS
+config.php
+config_local.php
+*.gz
+.htpasswd
